@@ -1,0 +1,10 @@
+{% load i18n %}
+Hi,
+Here the last QoS report:
+
+Ran {{ result.testsRun }} tests:
+{% if failures %}
+{% blocktrans count failures|length as count %}There is {{ count }} failure:{% plural %}There are {{ count }} failures:{% endblocktrans %}
+{% for test_key, test in failures.items %}- {{ test.name }}: {{ test.message|safe }}
+{% endfor %}
+{% endif %}

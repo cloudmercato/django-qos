@@ -1,0 +1,18 @@
+from django.conf import settings
+
+
+def get_setting(key, default=None):
+    param_key = f"QOS_{key}"
+    if not hasattr(settings, param_key):
+        return default
+    return getattr(settings, param_key)
+
+
+DEFAULT_APPS = []
+APPS = get_setting('APPS', DEFAULT_APPS)
+
+DEFAULT_SERVER_EMAIL = settings.SERVER_EMAIL
+SERVER_EMAIL = get_setting('SERVER_EMAIL', DEFAULT_SERVER_EMAIL)
+
+DEFAULT_MAILS = []
+MAILS = get_setting('MAILS', DEFAULT_MAILS)
