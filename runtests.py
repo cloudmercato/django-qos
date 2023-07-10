@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
 import sys
 
@@ -19,9 +19,11 @@ def main(argv=None):
         result = test_runner.run_tests([
             "django_qos.tests",
             "django_qos.db.tests",
+            "django_qos.sites.tests",
         ])
         return result
     execute_from_command_line(argv)
+
 
 if __name__ == '__main__':
     sys.exit(bool(main(sys.argv)))
