@@ -28,6 +28,10 @@ class TestRunner(unittest.TextTestRunner):
 
 
 def get_test_suite(module_paths):
+    """
+    Create a test suite from apps' paths or `settings.QOS_APPS` if
+    is `module_paths` is empty.
+    """
     is_module = True
     suite = unittest.TestSuite()
     if not module_paths:
@@ -36,8 +40,11 @@ def get_test_suite(module_paths):
         try:
             module_and_class = app.split('.')
             if len(module_and_class) == 3:
-                module_name = '%s.%s' % (module_and_class[0], module_and_class[1])
+                module_name = '.'.join(module_and_class[:2])
                 module = importlib.import_module(module_name)
+                if not hasattr(module, module_and_class[2]):
+                    logger.debug('No QoS in %s', app)
+                    continue
                 module = getattr(module, module_and_class[2])
                 is_module = False
             else:
@@ -54,13 +61,16 @@ def get_test_suite(module_paths):
 
 
 def run_tests(
-        suite,
-        verbosity=0,
-        ):
+    suite,
+    verbosity=0,
+):
+    """
+    Simple test runner adding pre/post signals.
+    """
     runner = TestRunner(
         verbosity=verbosity,
     )
     signals.pre_run_tests.send(sender=runner, suite=suite)
     result = runner.run(suite)
-    signals.pre_run_tests.send(sender=runner, suite=suite, result=result)
+    signals.post_run_tests.send(sender=runner, suite=suite, result=result)
     return result

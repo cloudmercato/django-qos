@@ -28,7 +28,7 @@ Usage
 
 QoS is organized like `unittests`
 1. You write a subclass of `django_qos.qos.QosTestCase`
-2. Your run `./manage.py qos`
+2. You run `./manage.py qos`
 
 
 Tests (dev)

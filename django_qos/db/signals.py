@@ -34,6 +34,6 @@ def post_run_tests_record(sender, suite, result, **kwargs):
         )
         post_record.send(sender, suite=suite, result=result, test=test, test_result=test_result)
     for test, traceback in result.failures:
-        make_err(test, traceback, 'failed')
+        make_err(test, traceback, 'failure')
     for test, traceback in result.errors:
         make_err(test, traceback, 'error')

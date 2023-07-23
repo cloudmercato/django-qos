@@ -8,7 +8,10 @@ def get_setting(key, default=None):
     return getattr(settings, param_key)
 
 
-DEFAULT_APPS = []
+DEFAULT_APPS = [
+    app for app in settings.INSTALLED_APPS
+    if not app.startswith('django.')
+]
 APPS = get_setting('APPS', DEFAULT_APPS)
 
 DEFAULT_SERVER_EMAIL = settings.SERVER_EMAIL
