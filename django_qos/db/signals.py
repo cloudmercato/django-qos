@@ -32,7 +32,13 @@ def post_run_tests_record(sender, suite, result, **kwargs):
             error=traceback,
             error_msg=traceback.splitlines()[-1].split(':')[-1].strip(),
         )
-        post_record.send(sender, suite=suite, result=result, test=test, test_result=test_result)
+        post_record.send(
+            sender,
+            suite=suite,
+            result=result,
+            test=test,
+            test_result=traceback
+        )
     for test, traceback in result.failures:
         make_err(test, traceback, 'failure')
     for test, traceback in result.errors:

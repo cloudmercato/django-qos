@@ -19,3 +19,6 @@ SERVER_EMAIL = get_setting('SERVER_EMAIL', DEFAULT_SERVER_EMAIL)
 
 DEFAULT_MAILS = []
 MAILS = get_setting('MAILS', DEFAULT_MAILS)
+
+DEFAULT_TEST_RUNNER = 'django_qos.runners.DiscoverRunner'
+TEST_RUNNER = get_setting('TEST_RUNNER', DEFAULT_TEST_RUNNER)

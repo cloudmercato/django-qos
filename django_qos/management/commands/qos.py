@@ -1,35 +1,20 @@
-from django.core.management.base import BaseCommand
+import sys
+import argparse
+from django.core.management.commands.test import Command as TestCommand
 from django_qos import utils
 
 
-class Command(BaseCommand):
+class Command(TestCommand):
     help = """Run QoS tests"""
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            'args', metavar='module_paths', nargs='*',
-            help='Path to TestCases to launch.'
-        )
+        super().add_arguments(parser)
+        parser._option_string_actions['--keepdb'].default = True
+        parser._option_string_actions['--keepdb'].help = argparse.SUPPRESS
+        parser._option_string_actions['--pattern'].default = 'qos.py'
+        return parser
 
-    def print_pre_test(self, suite):
-        self.stdout.write("Tests:")
-        for subsuite in suite._tests:
-            self.stdout.write(f"- {subsuite.__class__.__module__}.{subsuite.__class__.__name__}:")
-            for test_case in subsuite._tests:
-                self.stdout.write(f"  - {test_case}:")
-
-    def print_post_test(self, suite, results):
-        self.stdout.write(f"{results}")
-
-    def handle(self, *module_paths, **options):
-        suite = utils.get_test_suite(module_paths)
-        if options['verbosity'] > 0:
-            self.print_pre_test(suite)
-
-        test_options = {
-            'verbosity': options['verbosity'],
-        }
-        results = utils.run_tests(suite, **test_options)
-
-        if options['verbosity'] > 0:
-            self.print_post_test(suite, results)
+    def handle(self, *test_labels, **options):
+        results = utils.run_tests(test_labels, **options)
+        if results:
+            sys.exit(1)

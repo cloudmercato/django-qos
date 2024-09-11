@@ -4,7 +4,7 @@ __email__ = 'anthony.monthe@gmail.com'
 __license__ = 'BSD'
 __url__ = 'https://github.com/cloudmercato/django-qos'
 
-VERSION = (0, 1, 0)
+VERSION = (0, 1, 1)
 __version__ = '.'.join([str(v) for v in VERSION])
 
 default_app_config = 'django_qos.apps.DjangoQosConfig'

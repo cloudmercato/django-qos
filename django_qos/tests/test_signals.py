@@ -7,8 +7,8 @@ from django_qos import utils
 class PostRunTestEmailTest(TestCase):
     def test_func(self):
         # Setup
-        suite = utils.get_test_suite(['django_qos.tests.testproject.testapp.qos'])
-        result = utils.run_tests(suite)
+        test_labels = ['django_qos.tests.testproject.testapp.qos']
+        suite, result = utils.run_tests(test_labels)
         # Run
         signals.post_run_tests_email(
             sender=__name__,
