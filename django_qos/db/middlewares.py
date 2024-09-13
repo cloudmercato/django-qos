@@ -14,7 +14,7 @@ def get_func(path):
     return obj
 
 
-def duration_test(request, response, duration):
+def duration_test(request, response, duration, error):
     return duration > settings.DURATION_THRESHOLD
 
 
@@ -23,10 +23,11 @@ class RecordMiddleware:
         self.get_response = get_response
         self.func = staticmethod(get_func(settings.RECORD_ENABLE_FUNC))
 
-    def record(self, request, response, duration):
+    def record(self, request, response, duration, error):
         using = getattr(response, 'using', None)
         template_name = getattr(response, 'template_name', None)
         is_rendered = getattr(response, 'is_rendered', False)
+        status_code = 0 if response is None else response.status_code
         return models.RequestResult.objects.create(
             duration=duration,
             method=request.method,
@@ -35,18 +36,29 @@ class RecordMiddleware:
             is_ajax=request.is_ajax(),
             using=using,
             queries=connection.queries,
-            status_code=response.status_code,
+            status_code=status_code,
             template_name=template_name,
             is_rendered=is_rendered,
         )
 
     def __call__(self, request):
         t0 = time.time()
-        response = self.get_response(request)
+        error = None
+        try:
+            response = self.get_response(request)
+        except Exception as err:
+            response = None
+            error = err
         duration = time.time() - t0
-        if self.func(request, response, duration):
+        to_record = self.func(
+            request=request,
+            response=response,
+            duration=duration,
+            error=error,
+        )
+        if to_record:
             try:
-                self.record(request, response, duration)
+                self.record(request, response, duration, error)
             except Exception as err:
                 warnings.warn(str(err))
         return response
